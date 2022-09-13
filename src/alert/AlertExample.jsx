@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
@@ -6,13 +6,42 @@ import Button from '@mui/material/Button';
 
 import { alertTypes } from '../util/constants';
 
-const AlertExample = (props) => {
-  const [text, setText] = useState('');
-  const [link, setLink] = useState('');
-  const [timeLimit, setTimeLimit] = useState('');
-  const [alertType, setAlertType] = useState('');
+const initialForm = {
+  text: '',
+  link: '',
+  timeLimit: 10,
+  alertType: '',
+}
 
-  const disabled = !text || !link || !timeLimit || !alertType;
+const formReducer = (state, { type, payload }) => {
+  switch (type) {
+    case 'UPDATE':
+      return {
+        ...state,
+        [payload.key]: payload.value
+      }
+    case 'RESET':
+      return initialForm;
+    default:
+      throw new Error(`Unknown action type: ${type}`);
+  }
+}
+
+const AlertExample = ({ addAlert }) => {
+  const [{ text, link, timeLimit, alertType }, dispatch] = useReducer(formReducer, initialForm);
+
+  const disabled = !text || !timeLimit || !alertType;
+
+  function submitAlert() {
+    addAlert({
+      text,
+      link,
+      timeLimit,
+      alertType,
+      id: Date.now(),
+    });
+    dispatch({ type: 'RESET' });
+  }
 
   return (
     <div className="alert-example">
@@ -21,26 +50,27 @@ const AlertExample = (props) => {
           className='form-field'
           label='Text'
           value={text}
-          onChange={({ target }) => setText(target.value)}
+          onChange={({ target }) => dispatch({ type: 'UPDATE', payload: { key: 'text', value: target.value }})}
         />
         <TextField
           className='form-field'
           label='Link'
           value={link}
-          onChange={({ target }) => setLink(target.value)}
+          onChange={({ target }) => dispatch({ type: 'UPDATE', payload: { key: 'link', value: target.value }})}
         />
         <TextField
           className='form-field'
-          label='Time Limit'
+          label='Time Limit (in seconds)'
+          type='number'
           value={timeLimit}
-          onChange={({ target }) => setTimeLimit(target.value)}
+          onChange={({ target }) => dispatch({ type: 'UPDATE', payload: { key: 'timeLimit', value: target.value }})}
         />
         <TextField
           className='form-field'
           select={true}
           label='Alert Type'
           value={alertType}
-          onChange={({ target }) => setAlertType(target.value)}
+          onChange={({ target }) => dispatch({ type: 'UPDATE', payload: { key: 'alertType', value: target.value }})}
         >
           {alertTypes.map(({ value, label }) => (
             <MenuItem key={value} value={value}>
@@ -53,10 +83,7 @@ const AlertExample = (props) => {
         <Button
           disabled={disabled}
           variant='contained'
-          onClick={() => {
-            console.log(text, link, timeLimit, alertType);
-            // do dispatch stuff here
-          }}
+          onClick={submitAlert}
         >
           Submit
         </Button>
