@@ -5,6 +5,7 @@ import Link from '@mui/material/Link';
 
 const AlertComponent = ({ text, link, timeLimit, id, alertTitle, alertType, removeAlert }) => (
   <Snackbar
+    className='alert-component'
     key={id}
     open={true}
     autoHideDuration={timeLimit}
@@ -15,6 +16,7 @@ const AlertComponent = ({ text, link, timeLimit, id, alertTitle, alertType, remo
     anchorOrigin={{ vertical: 'top', horizontal: 'right'}}
   >
     <Alert severity={alertType} onClose={() => removeAlert(id)}>
+      {alertTitle && <h4>{alertTitle}</h4>}
       {link ? <Link underline='hover' href={link}>{text}</Link> : text }
     </Alert> 
   </Snackbar>

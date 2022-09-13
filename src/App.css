@@ -15,3 +15,7 @@
 .alert-example-form .form-field {
   margin: 15px 0px;
 }
+
+.alert-component h4 {
+  margin-top: 0px;
+}
