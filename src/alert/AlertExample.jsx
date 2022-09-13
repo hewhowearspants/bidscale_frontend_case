@@ -11,6 +11,7 @@ const initialForm = {
   link: '',
   timeLimit: 10,
   alertType: '',
+  alertTitle: '',
 }
 
 const formReducer = (state, { type, payload }) => {
@@ -28,7 +29,7 @@ const formReducer = (state, { type, payload }) => {
 }
 
 const AlertExample = ({ addAlert }) => {
-  const [{ text, link, timeLimit, alertType }, dispatch] = useReducer(formReducer, initialForm);
+  const [{ text, link, timeLimit, alertType, alertTitle }, dispatch] = useReducer(formReducer, initialForm);
 
   const disabled = !text || !timeLimit || !alertType;
 
@@ -39,6 +40,7 @@ const AlertExample = ({ addAlert }) => {
       timeLimit,
       alertType,
       id: Date.now(),
+      alertTitle,
     });
     dispatch({ type: 'RESET' });
   }
@@ -54,7 +56,13 @@ const AlertExample = ({ addAlert }) => {
         />
         <TextField
           className='form-field'
-          label='Link'
+          label='Title (optional)'
+          value={alertTitle}
+          onChange={({ target }) => dispatch({ type: 'UPDATE', payload: { key: 'alertTitle', value: target.value }})}
+        />
+        <TextField
+          className='form-field'
+          label='Link (optional)'
           value={link}
           onChange={({ target }) => dispatch({ type: 'UPDATE', payload: { key: 'link', value: target.value }})}
         />
